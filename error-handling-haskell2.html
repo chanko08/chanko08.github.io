@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="./css/default.css" />
+    <link rel="stylesheet" type="text/css" href="./css/code.css" />
+
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-44373310-1', 'alexbechanko.com');
+        ga('send', 'pageview');
+
+    </script>
+
+    <title>Epsilon - Handling Multiple Errors in Haskell Part Two</title>
+</head>
+<body>
+<header>
+    <h1>Epsilon</h1>
+
+    <nav>
+        <ul>
+            <li><a href="./">Home</a></li>
+            <li><a href="./about.html">About</a></li>
+            <li><a href="./archive.html">Archive</a></li>
+        </ul>
+    </nav>
+</header>
+
+<article>
+<header>
+    <h2>
+      <a href="error-handling-haskell2.html">Handling Multiple Errors in Haskell Part Two</a>
+    </h2> 
+    Posted on March 18, 2014
+</header>
+
+<p>In the <a href="./error-handling-haskell.html">previous post</a> I discussed how I transitioned from various ways of implementing validation. On the last one involving the combination of the <code>Maybe</code> and <code>State</code> types I said that while I like this one the best so far it still shows a bit more plumbing then I would like. In this post I will show the improved version of this I came to after.</p>
+<h2 id="monad-transformers">Monad Transformers</h2>
+<p>My issue from the previous post was that I had to manage the plumbing explicitly when it came to combining my validations into the form validation. A way to resolve this issue is to make use of monad transformers, which give you tools to manage this plumbing.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">
+<span class="kw">import </span><span class="dt">Control.Applicative</span>
+<span class="kw">import </span><span class="dt">Control.Monad.Trans.Class</span>
+<span class="kw">import </span><span class="dt">Control.Monad.Trans.State</span>
+<span class="kw">import </span><span class="dt">Control.Monad.Trans.Maybe</span>
+
+
+
+<span class="kw">type</span> <span class="dt">Age</span>      <span class="fu">=</span> <span class="dt">Int</span>
+<span class="kw">type</span> <span class="dt">Username</span> <span class="fu">=</span> <span class="dt">String</span>
+<span class="kw">data</span> <span class="dt">Form</span>     <span class="fu">=</span> <span class="dt">Form</span> <span class="dt">Age</span> <span class="dt">Username</span> <span class="kw">deriving</span> (<span class="dt">Show</span>)
+
+<span class="kw">type</span> <span class="dt">FormState</span> a <span class="fu">=</span> <span class="dt">MaybeT</span> (<span class="dt">State</span> [<span class="dt">String</span>]) a
+
+<span class="ot">pushErr ::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">FormState</span> a
+pushErr s <span class="fu">=</span> lift (modify (s<span class="fu">:</span>)) <span class="fu">&gt;&gt;</span> empty
+
+<span class="ot">validateAge ::</span> <span class="dt">Age</span> <span class="ot">-&gt;</span> <span class="dt">FormState</span> <span class="dt">Age</span>
+validateAge age
+    <span class="fu">|</span> age <span class="fu">&gt;</span> <span class="dv">0</span> <span class="fu">=</span> return age
+    <span class="fu">|</span> otherwise <span class="fu">=</span> pushErr <span class="st">&quot;Age needs to be positive&quot;</span>
+
+<span class="ot">validateUsername ::</span> <span class="dt">Username</span> <span class="ot">-&gt;</span> <span class="dt">FormState</span> <span class="dt">Username</span>
+validateUsername username
+    <span class="fu">|</span> username <span class="ot">`elem`</span> usernames <span class="fu">=</span> pushErr <span class="st">&quot;Username is already taken&quot;</span>
+    <span class="fu">|</span> otherwise                 <span class="fu">=</span> return username
+  <span class="kw">where</span>
+    usernames <span class="fu">=</span> [<span class="st">&quot;foo&quot;</span>, <span class="st">&quot;bar&quot;</span>, <span class="st">&quot;baz&quot;</span>]
+
+validateForm age username <span class="fu">=</span> <span class="dt">Form</span> <span class="fu">&lt;$&gt;</span> validateAge age
+                                 <span class="fu">&lt;*&gt;</span> validateUsername username</code></pre></div>
+<p>This code is similar to the previous version, but you’ll notive some slight differences. The main difference is that I used <code>MaybeT</code> instead of <code>Maybe</code>. With that monad transformer I’m able to make a monad with <code>Maybe</code> like features while still using other monads. In this case, the main places this shows up is in the <code>pushErr</code> function and the final form validation function. Now the <code>pushErr</code> function explicitly lifts itself into the <code>State</code> monad to handle errors, and the form validation values can be threaded like how it is done with the <code>Maybe</code> monad.</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'chanko08'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</article>
+
+
+<footer>
+    <div>
+        Copyright © 2014 by <a href="./">Epsilon</a>
+    </div>
+
+    <div> 
+        Powered by <a href="http://jaspervdj.be/hakyll">Hakyll</a>.
+    </div>
+
+</footer>
+</div>
+</body>
+</html>

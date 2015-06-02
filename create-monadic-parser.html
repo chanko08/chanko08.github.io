@@ -1,0 +1,216 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="./css/default.css" />
+    <link rel="stylesheet" type="text/css" href="./css/code.css" />
+
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-44373310-1', 'alexbechanko.com');
+        ga('send', 'pageview');
+
+    </script>
+
+    <title>Epsilon - Create a Monadic Parser</title>
+</head>
+<body>
+<header>
+    <h1>Epsilon</h1>
+
+    <nav>
+        <ul>
+            <li><a href="./">Home</a></li>
+            <li><a href="./about.html">About</a></li>
+            <li><a href="./archive.html">Archive</a></li>
+        </ul>
+    </nav>
+</header>
+
+<article>
+<header>
+    <h2>
+      <a href="create-monadic-parser.html">Create a Monadic Parser</a>
+    </h2> 
+    Posted on May  7, 2013
+</header>
+
+<p>Online I found <a href="http://eprints.nottingham.ac.uk/223/1/pearl.pdf">this</a> very interesting paper on creating a monadic parser from scratch. I thought it would make for a fun project to build my own similar but slightly different version of a parser following this paper, so this next series of posts will deal with creating a parser entirely from scratch. You can find the code for these posts <a href="http://github.com/chanko08/hparser">here</a>.</p>
+<p>Just a warning, this is for exercise only. I wouldn’t recommend using this to create your own language, there are better parser libraries like <a href="http://www.haskell.org/haskellwiki/Parsec">Parsec</a> to use instead.</p>
+<h2 id="defining-a-data-type">Defining a Data Type</h2>
+<p>To build a parser, we have to think about a few things first. First, let’s solidify what a parser is. For this article, we will think of a parser as a function that takes a string as input, and possibly outputs something useful. Since the purpose of this article is to create parsers we can combine to produce different parsers, we also should think of the parser returning any string it did not parse. Also, there might be a case where the string can not be parsed, so we must allow for that possibility in our library With that idea, we define a <code>Parser</code> data type</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">Parser</span> a <span class="fu">=</span> <span class="dt">Parser</span> ( <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (a, <span class="dt">String</span>) )</code></pre></div>
+<h2 id="a-simple-parser">A Simple Parser</h2>
+<p>So with this data type, let’s create a simple parser that parses a single character. For this parser, we will not care what character is parsed. As long as it can parse a character, this parser will return one.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">eat ::</span> <span class="dt">Parser</span> <span class="dt">Char</span>
+eat <span class="fu">=</span> <span class="dt">Parser</span> eat'
+  <span class="kw">where</span>
+    eat' (x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="dt">Just</span> (x,xs)
+    eat' _      <span class="fu">=</span> <span class="dt">Nothing</span></code></pre></div>
+<p>To use this function, let’s define some helper functions that will extract the parser function from the parser</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">parse ::</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> (<span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> (a, <span class="dt">String</span>))
+parse (<span class="dt">Parser</span> p) <span class="fu">=</span> p
+
+<span class="ot">extract ::</span> <span class="dt">Maybe</span> (a, <span class="dt">String</span>) <span class="ot">-&gt;</span> <span class="dt">Maybe</span> a
+extract <span class="fu">=</span> fmap fst 
+
+<span class="ot">runParser ::</span> (<span class="dt">Parser</span> a) <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> (<span class="dt">Maybe</span> a)
+runParser p s <span class="fu">=</span> extract <span class="fu">$</span> (parse p) s</code></pre></div>
+<p>So now lets use the <code>eat</code> Parser we made</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">main <span class="fu">=</span> print <span class="fu">$</span> runParser eat <span class="st">&quot;omnomnom&quot;</span>
+<span class="co">-- output: Just 'o'</span></code></pre></div>
+<h2 id="making-a-monad-of-the-data-type">Making a Monad of the Data Type</h2>
+<p>Earlier we said we want to combine parsers to create new parsers. To do that, we need to create a function that will combine the parsers in a way that makes sense to us.</p>
+<p>So let’s try to create that function.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">combine ::</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> b <span class="ot">-&gt;</span> <span class="dt">Parser</span> b
+combine (<span class="dt">Parser</span> p1) (<span class="dt">Parser</span> p2) <span class="fu">=</span> <span class="dt">Parser</span> combine'
+  <span class="kw">where</span>
+    combine' <span class="fu">=</span> join <span class="fu">.</span> fmap (p2 <span class="fu">.</span> snd) <span class="fu">.</span> p1</code></pre></div>
+<p>There we go! With this function, we call the first parser, then take the leftover string and put it into the second parser. After that, we return the contents of the second parser. Now we can do this.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">main <span class="fu">=</span> print <span class="fu">$</span> runParser (eat <span class="ot">`combine`</span> eat) <span class="st">&quot;omnomnom&quot;</span>
+<span class="co">-- output: Just 'm'</span></code></pre></div>
+<p>We have this <code>combine</code> function, but let’s go further than this. Let’s try to use existing structure to help define the possibilities of our parser. To do this, we will define <code>Parser</code> as a monad.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Control.Monad</span>
+
+<span class="kw">instance</span> <span class="dt">Monad</span> <span class="dt">Parser</span> <span class="kw">where</span>
+    return x <span class="fu">=</span> <span class="dt">Parser</span> <span class="fu">$</span> \cs <span class="ot">-&gt;</span> <span class="dt">Just</span> (x, cs)
+    
+    (<span class="fu">&gt;&gt;=</span>) p f <span class="fu">=</span> <span class="dt">Parser</span> <span class="fu">$</span> join <span class="fu">.</span> fmap applyf <span class="fu">.</span> parse p
+      <span class="kw">where</span>
+        applyf (v, ys) <span class="fu">=</span> parse (f v) ys</code></pre></div>
+<p>So <code>return</code> makes a parser that does not parse a value, and passes the parameter of <code>return</code> to the parser. The bind function takes a parser, passes what that parser leaves unparsed to a function. This function then takes the value of the parser and uses that as an argument to return a parser. So in a way, this is what the <code>combine</code> function does, but instead uses a function that returns a parser.</p>
+<h2 id="verifying-the-data-type-is-a-monad">Verifying the Data Type is a Monad</h2>
+<p>There are three laws a monad has to follow, so let’s check that the <code>Parser</code> type follows these laws.</p>
+<h3 id="left-identity">Left Identity</h3>
+<p>The left identity law states that given a value <code>x</code> of type <code>a</code> and a function that takes a value of type <code>a</code> and returns a <code>Parser</code>, that</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">return x <span class="fu">&gt;&gt;=</span> p <span class="fu">=</span> p x</code></pre></div>
+<p>So for our parser, return was defined to place the <code>x</code> value into a null <code>Parser</code>, or a Parser that does not parse the string. The bind function takes that value <code>x</code> and applies it to the parser <code>p</code>. Thus, we can see that this law holds for how we defined <code>return</code> and the bind function.</p>
+<h3 id="right-identity">Right Identity</h3>
+<p>The right identity law states that given a parser <code>p</code>, that</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">p <span class="fu">&gt;&gt;=</span> return <span class="fu">=</span> p</code></pre></div>
+<p>So the bind function takes the value out of the parser <code>p</code>, passes it to <code>return</code>. The <code>return</code> function just re-wraps that into the <code>Parser</code> type, so the right identity law holds.</p>
+<h3 id="associativity">Associativity</h3>
+<p>The associativity law states that given a parser <code>p</code> and two functions that return parsers <code>f</code> and <code>g</code> that</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(p <span class="fu">&gt;&gt;=</span> f) <span class="fu">&gt;&gt;=</span> g <span class="fu">=</span> p <span class="fu">&gt;&gt;=</span> (\x <span class="ot">-&gt;</span> f x <span class="fu">&gt;&gt;=</span> g)</code></pre></div>
+<p>So for our parser, we know that parser <code>p</code> passes its value and leftover string to the function <code>f</code> and the parser it produces. This step is done again between the parser <code>f</code> creates and the function <code>g</code>. The right side of the equality above is stating this more explicitly, but it does the same thing as the before.</p>
+<p>This means that the <code>Parser</code> type we created is a monad under our definition of the bind function and <code>return</code>.</p>
+<h2 id="adding-onto-the-monad-structure">Adding onto the Monad Structure</h2>
+<p>While the monad structure makes combining parsers easier, there are a few more things we can do to make the <code>Parser</code> type easier to use. One way we can do this is have a function that takes in two parser. The function will try to apply a parser, and if it fails (returns <code>Nothing</code>) then return whatever is in the other parser. Put more simply, lets have an ‘or’ operator for our <code>Parser</code>. On top of that, let’s create the concept of a null <code>Parser</code> we described earlier</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">nullParser <span class="fu">=</span> <span class="dt">Parser</span> <span class="fu">$</span> const <span class="dt">Nothing</span>
+
+choice p1 p2 <span class="fu">=</span> <span class="dt">Parser</span> <span class="fu">$</span> \cs <span class="ot">-&gt;</span> <span class="kw">case</span> parse p1 cs <span class="kw">of</span>
+                                    <span class="dt">Nothing</span> <span class="ot">-&gt;</span> parser p2 cs
+                                    x       <span class="ot">-&gt;</span> x</code></pre></div>
+<p>The <code>nullParser</code> function is a <code>Parser</code> that returns <code>Nothing</code> no matter the input. The <code>choice</code> function gives us the ability to try multiple different parsers before saying we failed. Let’s give it a try.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">char c <span class="fu">=</span> <span class="dt">Parser</span> char'
+  <span class="kw">where</span>
+    char' (x<span class="fu">:</span>xs) <span class="fu">|</span> x <span class="fu">==</span> c    <span class="fu">=</span> <span class="dt">Just</span> (c, xs)
+                 <span class="fu">|</span> otherwise <span class="fu">=</span> <span class="dt">Nothing</span>
+          _                  <span class="fu">=</span> <span class="dt">Nothing</span>
+
+oneof (c<span class="fu">:</span>cs) <span class="fu">=</span> choice (char c) (oneof cs)
+oneof _      <span class="fu">=</span> nullParser
+
+letter <span class="fu">=</span> oneof <span class="st">&quot;abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;</span>
+
+main <span class="fu">=</span> print <span class="fu">$</span> runParser letter <span class="st">&quot;aasdd&quot;</span>
+<span class="co">-- output: Just 'a'</span></code></pre></div>
+<p>Here we created a few more useful parsers, a parser that will parser any character of a string that is given to it, and a parser that parses letters of the alphabet. We defined these functions, but really they already describe another structure called a Monoid. A monoid has a function that takes two monoids. This function must be associative, and it must have some monoid that is a unit.</p>
+<p>So for the <code>Parser</code> type, we defined <code>nullParser</code> and <code>choice</code>. In this case <code>nullParser</code> is the unit monoid. That is, it is the monoid where applying <code>choice</code> on it and a different parser always gives the result of the different parser. So you can see that <code>nullParser</code> definitely has that property. The last thing to check is that <code>choice</code> is associative, or that</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">(p1 <span class="ot">`choice`</span> p2) <span class="ot">`choice`</span> p3 <span class="fu">=</span> p1 <span class="ot">`choice`</span> (p2 <span class="ot">`choice`</span> p3)</code></pre></div>
+<p>Since <code>choice</code> acts like an or operator, we know it must be associative, just like the or operator. So the next step is to make <code>Parser</code> a monadplus.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">MonadPlus</span> <span class="dt">Parser</span> <span class="kw">where</span>
+    mempty  <span class="fu">=</span> nullParser
+    mappend <span class="fu">=</span> choice</code></pre></div>
+<p>With this, we can take advantage of all the the helper functions that can be used with monoids.</p>
+<h2 id="calculator-parser">Calculator Parser</h2>
+<p>We will finish this article by using our new found <code>Parser</code> type to make a parser for a calculator language. So first, let’s map out what the syntax for the calculator is. We will make the calculator use a lisp like mathematical notation, where it will accept integers, and operations like multiplication, division, addition, and subtraction. An example program for this calculator language might be</p>
+<pre><code>(* 1 (+ 1 2))</code></pre>
+<p>Written in the more familiar mathematical notation, this is equivalent to</p>
+<pre><code>(1 + 2) * 1</code></pre>
+<h3 id="integer-parser">Integer Parser</h3>
+<p>So first lets parse integers. An integer will be one or more digit, and that’s it. So let’s define a parser for it.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="ot">many ::</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> [a]
+many p <span class="fu">=</span> <span class="dt">Parser</span> <span class="fu">$</span> many' []
+  <span class="kw">where</span>
+    many' xs cs <span class="fu">=</span> <span class="kw">case</span> parse p cs <span class="kw">of</span>
+                        <span class="dt">Nothing</span>       <span class="ot">-&gt;</span> <span class="dt">Just</span> (xs, cs)
+                        <span class="dt">Just</span> (x, cs') <span class="ot">-&gt;</span> many' (x<span class="fu">:</span>xs) cs'
+
+<span class="ot">many1 ::</span> <span class="dt">Parser</span> a <span class="ot">-&gt;</span> <span class="dt">Parser</span> [a]
+many1 p <span class="fu">=</span> <span class="dt">Parser</span> <span class="fu">$</span> \cs <span class="ot">-&gt;</span> listToMaybe <span class="fu">.</span> parse (many p) <span class="fu">$</span> cs
+  <span class="kw">where</span>
+    listToMaybe <span class="dt">Nothing</span>        <span class="fu">=</span> <span class="dt">Nothing</span>
+    listToMaybe (<span class="dt">Just</span> ([], _)) <span class="fu">=</span> <span class="dt">Nothing</span>
+    listToMaybe  x             <span class="fu">=</span> x
+    
+digit <span class="fu">=</span> oneof <span class="st">&quot;0123456789&quot;</span>
+
+integer <span class="fu">=</span> many1 digit</code></pre></div>
+<p>And with this, we’ve defined a couple more important functions for us, <code>many</code> and <code>many1</code>. The <code>many</code> function trys to apply a parser as many times as it can, and dumps all the successful trys into a list The <code>many1</code> function does the same, except gives <code>Nothing</code> if that list is empty.</p>
+<h3 id="operator-parser">Operator Parser</h3>
+<p>This is really simplistic if all we do is parse the characters</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">operator <span class="fu">=</span> oneof <span class="st">&quot;+*/-&quot;</span></code></pre></div>
+<h3 id="putting-it-together">Putting it together</h3>
+<p>Now all that’s left is to put it together and make a parser for our calculator</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">operator <span class="fu">=</span> oneof <span class="st">&quot;+*/-&quot;</span>
+
+digit <span class="fu">=</span> oneof <span class="st">&quot;0123456789&quot;</span>
+
+integer <span class="fu">=</span> many1 digit
+
+spaces <span class="fu">=</span> many <span class="fu">$</span> char <span class="ch">' '</span>
+
+expression <span class="fu">=</span> expression' <span class="ot">`mappend`</span> integer
+
+expression' <span class="fu">=</span> <span class="kw">do</span>
+    char <span class="ch">'('</span>
+    spaces
+    
+    operator
+    
+    spaces
+    
+    expression
+    
+    spaces
+    
+    expression
+    char <span class="ch">')'</span></code></pre></div>
+<p>So this is the whole parser. It checks for parenthesis, and spaces, followed by an operator and two other expressions!</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'chanko08'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</article>
+
+
+<footer>
+    <div>
+        Copyright © 2014 by <a href="./">Epsilon</a>
+    </div>
+
+    <div> 
+        Powered by <a href="http://jaspervdj.be/hakyll">Hakyll</a>.
+    </div>
+
+</footer>
+</div>
+</body>
+</html>

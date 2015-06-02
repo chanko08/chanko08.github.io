@@ -1,0 +1,138 @@
+
+header, article, section,
+h1, h2, h3,
+ul, li, a {
+    padding:0;
+    margin:0;
+}
+
+html {
+    background-color:#ddd;
+}
+
+body {
+    width:46em;
+    border:2px solid #ccc;
+    margin:0 auto 0;
+    font-family: "lucida grande","lucida sans unicode", sans-serif;
+    background-color:#fff;
+    color:#222;
+    font-weight:300;
+}
+
+header, footer, article, section {
+    padding:1.5em 3em;       
+}       
+
+header ul {
+    display:block;
+    width:100%;
+}
+
+header li {
+    
+    display:inline-block;   
+    font-size:1.3em;
+    border-left:2px solid #880000;
+    padding-left:0.5em;
+    padding-right:0.5em;
+    
+}
+
+header li:first-child {
+    border-left:none;
+    padding-left:0;
+}
+
+li a {
+    display:block;
+}
+
+
+article header {
+    padding:0;
+    padding-bottom:1em;
+}
+
+article ul {
+  list-style-position:inside;
+  margin-top:0.5em;
+  margin-bottom:0.5em;
+}
+
+h1 {
+    font-size:3em;
+}
+
+h2,h3 {
+  font-family: Baskerville, "Baskerville Old Face", "Hoefler Text", Garamond, "Times New Roman", serif;
+}
+h2 a {
+    color:black;
+}
+
+        
+p {
+    margin-top:0;
+    margin-bottom:0;
+    padding-bottom:1em;
+}
+
+a {
+    text-decoration:none;
+    color:#880000;
+}
+
+a:hover {
+    text-decoration:underline;
+}
+
+p + p {
+    text-indent:1.5em;
+}
+
+pre + p {
+    padding-top:1em;
+}
+
+p > code {
+    color: #902000;
+}
+
+pre {
+  border-top:1px solid #ddd;
+  border-bottom:1px solid #ddd;
+  padding-top:1em;
+  padding-bottom:1em;
+  overflow-x:auto; 
+}
+pre.sourceCode span.kw { color: #007020; font-weight: bold; }
+pre.sourceCode span.dt { color: #902000; }
+pre.sourceCode span.dv { color: #40a070; }
+pre.sourceCode span.bn { color: #40a070; }
+pre.sourceCode span.fl { color: #40a070; }
+pre.sourceCode span.ch { color: #4070a0; }
+pre.sourceCode span.st { color: #4070a0; }
+pre.sourceCode span.co { color: #60a0b0; font-style: italic; }
+pre.sourceCode span.ot { color: #007020; }
+pre.sourceCode span.al { color: red; font-weight: bold; }
+pre.sourceCode span.fu { color: #06287e; }
+pre.sourceCode span.re { }
+pre.sourceCode span.er { color: red; font-weight: bold; }
+
+ul#postlist {
+  list-style:none;
+}
+
+ul#postlist li {
+  padding-bottom:1em;
+  
+}
+
+ul#postlist a {
+  font-weight:bold;
+}
+
+img {
+  max-width:100%;
+}

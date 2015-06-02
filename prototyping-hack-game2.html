@@ -1,0 +1,92 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="./css/default.css" />
+    <link rel="stylesheet" type="text/css" href="./css/code.css" />
+
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-44373310-1', 'alexbechanko.com');
+        ga('send', 'pageview');
+
+    </script>
+
+    <title>Epsilon - Prototyping a Game - Adding Player Input</title>
+</head>
+<body>
+<header>
+    <h1>Epsilon</h1>
+
+    <nav>
+        <ul>
+            <li><a href="./">Home</a></li>
+            <li><a href="./about.html">About</a></li>
+            <li><a href="./archive.html">Archive</a></li>
+        </ul>
+    </nav>
+</header>
+
+<article>
+<header>
+    <h2>
+      <a href="prototyping-hack-game2.html">Prototyping a Game - Adding Player Input</a>
+    </h2> 
+    Posted on September 24, 2013
+</header>
+
+<p>Continuing from the <a href="./prototyping-hack-game1.html">last post</a> with prototyping a game based on hacking networks and gaining territory.</p>
+<h2 id="trojans">Trojans</h2>
+<div class="figure">
+<img src="./images/hack/trojans.gif" alt="A working trojan in action" />
+<p class="caption">A working trojan in action</p>
+</div>
+<p>The next step of prototyping is the things that the player controls the board with. Since this is going to be (at least in my head for now) a hacking culture related game, it seemed appropriate to call these trojans.</p>
+<p>The way I want this game to work is you have some sort of attack units that follow a single set of instructions. The fun (I think) will come from the player making a set of different units that do different things, and combining their use to form interesting strategies.</p>
+<p>Here you see me choosing a particular cell, and when I let the game update the trojan propagates with a specific set of instructions I gave it. In this case I said to infect the top and bottom cell, then infect the right cell, repeating this forever.</p>
+<p>Already I can see there are a couple of management problems I will have technically. Right now I’m implementing this by creating new trojans for the cells that are infected, but you can see there is a possibility of a lot of overlap. Maybe next time I will move this logic to be contained within the trojan, and just keep track of the tiles it is currently on.</p>
+<h2 id="making-this-into-a-game">Making This Into a Game</h2>
+<p>Already I can see the possibility for a bit of the thinking kind of fun. Originally when I envisioned this I was seeing a battle of territory between two adversaries, each using their respective techniques to take over, but there are a lot of other areas that can be changed to possibly add more fun. Simple off the top of my head things include:</p>
+<ul>
+<li>Add a limit to how much a trojan can propagate</li>
+<li>Add a cool down rate to how fast a trojan propagates based on the directions it is given</li>
+<li>Give the player constrained parameters to work with in the creation/usage of trojans</li>
+</ul>
+<h2 id="next-up-on-the-plate">Next up on the Plate</h2>
+<p>Next time I will probably do a little optimization in how propagation works, and then work out a simple way to create trojans in the GUI, seeing how things play out.</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'chanko08'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</article>
+
+
+<footer>
+    <div>
+        Copyright © 2014 by <a href="./">Epsilon</a>
+    </div>
+
+    <div> 
+        Powered by <a href="http://jaspervdj.be/hakyll">Hakyll</a>.
+    </div>
+
+</footer>
+</div>
+</body>
+</html>

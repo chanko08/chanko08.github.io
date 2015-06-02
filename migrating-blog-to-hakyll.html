@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="./css/default.css" />
+    <link rel="stylesheet" type="text/css" href="./css/code.css" />
+
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-44373310-1', 'alexbechanko.com');
+        ga('send', 'pageview');
+
+    </script>
+
+    <title>Epsilon - Migrating Blog to Hakyll</title>
+</head>
+<body>
+<header>
+    <h1>Epsilon</h1>
+
+    <nav>
+        <ul>
+            <li><a href="./">Home</a></li>
+            <li><a href="./about.html">About</a></li>
+            <li><a href="./archive.html">Archive</a></li>
+        </ul>
+    </nav>
+</header>
+
+<article>
+<header>
+    <h2>
+      <a href="migrating-blog-to-hakyll.html">Migrating Blog to Hakyll</a>
+    </h2> 
+    Posted on May  6, 2013
+</header>
+
+<p>Since I grew tired of working against a few different blogging systems with this blog, I’ve moved to one that is extremely flexible, Hakyll. Since Hakyll allows me to create any kind of structure I want for my site, it was very easy integrating the new parts I wanted into the this system.</p>
+<p>I’ve also switched the way I’m hosting the site. Before, I was using a EC2 Ubuntu server instance off of Amazon, but since this blog is completely static, I’ve decided to try deploying an S3 instance instead, and see what benefits or problems I reap.</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'chanko08'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</article>
+
+
+<footer>
+    <div>
+        Copyright © 2014 by <a href="./">Epsilon</a>
+    </div>
+
+    <div> 
+        Powered by <a href="http://jaspervdj.be/hakyll">Hakyll</a>.
+    </div>
+
+</footer>
+</div>
+</body>
+</html>

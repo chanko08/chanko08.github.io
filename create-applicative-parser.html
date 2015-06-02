@@ -1,0 +1,226 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="./css/default.css" />
+    <link rel="stylesheet" type="text/css" href="./css/code.css" />
+
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-44373310-1', 'alexbechanko.com');
+        ga('send', 'pageview');
+
+    </script>
+
+    <title>Epsilon - Create an Applicative Parser</title>
+</head>
+<body>
+<header>
+    <h1>Epsilon</h1>
+
+    <nav>
+        <ul>
+            <li><a href="./">Home</a></li>
+            <li><a href="./about.html">About</a></li>
+            <li><a href="./archive.html">Archive</a></li>
+        </ul>
+    </nav>
+</header>
+
+<article>
+<header>
+    <h2>
+      <a href="create-applicative-parser.html">Create an Applicative Parser</a>
+    </h2> 
+    Posted on May  7, 2013
+</header>
+
+<p>In this post, we take our previously made monadic parser library, and also make it an instance of the applicative functor class. Since a monad happens to be an applicative functor, there are not really any increases in functionality that will be made. Instead, making the parser an applicative functor will allow us to use functions that are provided for applicative functors to write our parser in a different style for many use cases. Doing this will allow us to write a parser in a different, and sometimes more clean way.</p>
+<h2 id="making-a-functor-of-the-data-type">Making a Functor of the Data Type</h2>
+<p>In order to make <code>Parser</code> a functor, we must create one function, <code>fmap</code>. The function <code>fmap</code> has the type <code>Functor f =&gt; ( a -&gt; b ) -&gt; f a -&gt; f b</code>. This type implies a couple things about <code>fmap</code>. The first is that it takes in a function that makes one datatype to another. The second is that it also takes a functor that carrys the first type in it, and outputs a functor with the second data type in it. So lets try and define <code>Parser</code> as a functor by taking advantage of the fact that <code>Parser</code> is a monad as well.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">
+<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Parser</span> <span class="kw">where</span>
+<span class="ot">    fmap ::</span> <span class="dt">Functor</span> f <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b
+    fmap f ma <span class="fu">=</span> <span class="kw">do</span>
+        a <span class="ot">&lt;-</span> ma
+        return (f a)</code></pre></div>
+<p>That’s it! Mind you, since it is known that a monad is also a functor, there is a function that is the equivalent of <code>fmap</code>. This function is called <code>liftM</code>. So we could rewrite our previous code to be like this.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Control.Monad</span>
+<span class="kw">instance</span> <span class="dt">Functor</span> <span class="dt">Parser</span> <span class="kw">where</span>
+    fmap <span class="fu">=</span> liftM
+    </code></pre></div>
+<h2 id="verifying-that-the-type-is-a-functor">Verifying that the type is a Functor</h2>
+<p>Normally, if we were defining a functor from scratch, we would have to show that the type satisfies the following laws.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">
+<span class="co">-- That there is an identity function, a function that maps anything to itself.</span>
+fmap id  <span class="fu">==</span>  id
+
+<span class="co">-- Distributive property. Given a function composed of f and g, the result of fmapping them composed is the</span>
+<span class="co">-- result of them being fmapped separately.</span>
+fmap (f <span class="fu">.</span> g)  <span class="fu">==</span>  fmap f <span class="fu">.</span> fmap g</code></pre></div>
+<p>Fortunately for us, the <code>Parser</code> type has already been shown to be a monad. Since the monad is a specialization of the functor type, we can infer that it also satisfies these laws on top of the the monad laws we proved earlier!</p>
+<h2 id="making-an-applicative-functor-of-the-data-type">Making an Applicative Functor of the Data Type</h2>
+<p>To make <code>Parser</code> an applicative functor, we have two functions that must be defined, <code>pure</code> and <code>&lt;*&gt;</code>. The function <code>pure</code> has a type of <code>Applicative f =&gt; a -&gt; f a</code>. That is, it puts normal data types into an applicative functor. The function <code>&lt;*&gt;</code> has a type of <code>Applicative f =&gt; f (a -&gt; b) -&gt; f a -&gt; f b</code>. In other words, <code>&lt;*&gt;</code> is a function that applies values to functions in an applicative functor context. So let’s try and define <code>Parser</code> as an applicative functor, keeping in mind that <code>Parser</code> is a monad.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Control.Applicative</span> <span class="kw">hiding</span> (many)
+
+<span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">Parser</span> <span class="kw">where</span>
+    pure a <span class="fu">=</span> return a
+    
+    (<span class="fu">&lt;*&gt;</span>) ff fa <span class="fu">=</span> <span class="kw">do</span>
+        f <span class="ot">&lt;-</span> ff
+        a <span class="ot">&lt;-</span> fa
+        return (f a)
+        </code></pre></div>
+<p>Looking at the <code>return</code> function that a monad has, you can see it has a very similar type structure <code>Monad m =&gt; a -&gt; m a</code>. Since <code>Parser</code> is a monad, we can just drop <code>return</code> in as the function to use when we use <code>pure</code>. The <code>&lt;*&gt;</code> function is a little more complicated. We had to unroll the function and the value to combine it into the result. However, like most things in haskell, there is a function that is the monad equivalent to <code>&lt;*&gt;</code>. The monad equivalent for <code>&lt;*&gt;</code> is called called <code>ap</code>. The function <code>ap</code> has a very similar type structure <code>Monad m =&gt; m (a -&gt; b) -&gt; m a -&gt; m b</code>, so we can just drop it in as the function to use when calling <code>&lt;*&gt;</code>. So let’s rewrite our instance definition:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Control.Applicative</span> <span class="kw">hiding</span> (many)
+<span class="kw">import </span><span class="dt">Control.Monad</span>
+
+<span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">Parser</span> <span class="kw">where</span>
+    pure <span class="fu">=</span> return
+    (<span class="fu">&lt;*&gt;</span>) <span class="fu">=</span> ap</code></pre></div>
+<h2 id="verifying-that-the-type-is-an-applicative-functor">Verifying that the type is an Applicative Functor</h2>
+<p>If we were defining <code>Parser</code> as an applicative functor from scratch, there would be a few laws we would have to make sure it follows.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">
+<span class="co">-- There is an identity, a function that maps anything to itself. In this case it's `pure id`</span>
+pure id <span class="fu">&lt;*&gt;</span> u <span class="fu">==</span> u
+
+<span class="co">-- We can compose values together in an expected way.</span>
+pure (<span class="fu">.</span>) <span class="fu">&lt;*&gt;</span> u <span class="fu">&lt;*&gt;</span> v <span class="fu">&lt;*&gt;</span> w <span class="fu">==</span> u <span class="fu">&lt;*&gt;</span> (v <span class="fu">&lt;*&gt;</span> w)
+
+<span class="co">-- Putting values into the context of an applicative functor doesn't change the operations that are done to those</span>
+<span class="co">-- values.</span>
+pure f <span class="fu">&lt;*&gt;</span> pure x <span class="fu">==</span> pure (f x)
+
+<span class="co">-- Similar to previous one, the order we apply values and functions should not change the value in the applicative functor.</span>
+u <span class="fu">&lt;*&gt;</span> pure x <span class="fu">==</span> pure (\f <span class="ot">-&gt;</span> f x) <span class="fu">&lt;*&gt;</span> u</code></pre></div>
+<p>Yet again, we are fortunate enough to have made <code>Parser</code> a monad first, as a monad must follow these laws in order for it to be a monad. Since we know <code>Parser</code> is a monad, we do not have to check these by hand.</p>
+<h2 id="utility-of-being-an-applicative-functor">Utility of Being an Applicative Functor</h2>
+<p>So what useful things do we get by making <code>Parser</code> an applicative functor? Well, as described at the beginning, making <code>Parser</code> an applicative functor gives us a little bit more stylistic freedom in how we make our parser. To show this, we will recreate the simple calculator parser we made in the first parser post. Previously, our parser looked like this:</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">digit <span class="fu">=</span> oneof <span class="st">&quot;0123456789&quot;</span>
+
+integer <span class="fu">=</span> many1 digit
+
+spaces <span class="fu">=</span> many <span class="fu">$</span> char <span class="ch">' '</span>
+
+expression <span class="fu">=</span> expression' <span class="ot">`mappend`</span> integer
+
+expression' <span class="fu">=</span> <span class="kw">do</span>
+    char <span class="ch">'('</span>
+
+    spaces
+    
+    operator
+    
+    spaces
+    
+    expression
+    
+    spaces
+    
+    expression
+
+    char <span class="ch">')'</span>
+
+    return <span class="st">&quot;&quot;</span></code></pre></div>
+<p>Let’s modify it slightly so that we do return something in the expression. This will make the applicative functor style more prominent, as well as make the calculator useful. To start off, we will show this done monadically.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell">
+<span class="kw">data</span> <span class="dt">Expression</span> <span class="fu">=</span> <span class="dt">Expr</span> <span class="dt">Op</span> <span class="dt">Expression</span> <span class="dt">Expression</span> <span class="fu">|</span> <span class="dt">Number</span> <span class="dt">Int</span> <span class="kw">deriving</span> <span class="dt">Show</span>
+<span class="kw">data</span> <span class="dt">Op</span> <span class="fu">=</span> <span class="dt">Add</span> <span class="fu">|</span> <span class="dt">Sub</span> <span class="fu">|</span> <span class="dt">Div</span> <span class="fu">|</span> <span class="dt">Mul</span> <span class="kw">deriving</span> <span class="dt">Show</span>
+
+<span class="co">-- keep these functions the same as they were before</span>
+spaces <span class="fu">=</span> many <span class="fu">$</span> char <span class="ch">' '</span>
+digit <span class="fu">=</span> oneof <span class="st">&quot;0123456789&quot;</span>
+expression <span class="fu">=</span> expression' <span class="ot">`mplus`</span> integer
+
+<span class="co">-- change these ones to return something useful after parsing.</span>
+operator <span class="fu">=</span> liftM toOp <span class="fu">$</span> oneof <span class="st">&quot;+*/-&quot;</span> 
+
+toOp <span class="ch">'+'</span> <span class="fu">=</span> <span class="dt">Add</span>
+toOp <span class="ch">'-'</span> <span class="fu">=</span> <span class="dt">Sub</span>
+toOp <span class="ch">'/'</span> <span class="fu">=</span> <span class="dt">Div</span>
+toOp <span class="ch">'*'</span> <span class="fu">=</span> <span class="dt">Mul</span>
+
+integer <span class="fu">=</span> <span class="kw">do</span>
+    ds <span class="ot">&lt;-</span> many1 digit
+    return <span class="fu">$</span> <span class="dt">Number</span> (read<span class="ot"> ds ::</span><span class="dt">Int</span>)
+
+expression' <span class="fu">=</span> <span class="kw">do</span>
+    char <span class="ch">'('</span>
+    
+    spaces
+
+    op <span class="ot">&lt;-</span> operator
+    
+    spaces
+    
+    ex1 <span class="ot">&lt;-</span> expression
+    
+    spaces
+    
+    ex2 <span class="ot">&lt;-</span> expression
+    
+    char <span class="ch">')'</span>
+
+    return <span class="fu">$</span> <span class="dt">Expr</span> op ex1 ex2
+    </code></pre></div>
+<p>Now compare this to the applicative functor way.</p>
+<div class="sourceCode"><pre class="sourceCode haskell"><code class="sourceCode haskell"><span class="kw">import </span><span class="dt">Control.Applicative</span>
+
+<span class="kw">data</span> <span class="dt">Expression</span> <span class="fu">=</span> <span class="dt">Expr</span> <span class="dt">Op</span> <span class="dt">Expression</span> <span class="dt">Expression</span> <span class="fu">|</span> <span class="dt">Number</span> <span class="dt">Int</span> <span class="kw">deriving</span> <span class="dt">Show</span>
+<span class="kw">data</span> <span class="dt">Op</span> <span class="fu">=</span> <span class="dt">Add</span> <span class="fu">|</span> <span class="dt">Sub</span> <span class="fu">|</span> <span class="dt">Div</span> <span class="fu">|</span> <span class="dt">Mul</span> <span class="kw">deriving</span> <span class="dt">Show</span>
+
+<span class="co">-- keep these functions the same as they were before</span>
+spaces <span class="fu">=</span> many <span class="fu">$</span> char <span class="ch">' '</span>
+digit <span class="fu">=</span> oneof <span class="st">&quot;0123456789&quot;</span>
+expression <span class="fu">=</span> expression' <span class="ot">`mplus`</span> integer
+
+<span class="co">-- change these ones to return something useful after parsing.</span>
+operator <span class="fu">=</span> oneof <span class="st">&quot;+*/-&quot;</span> <span class="fu">&gt;&gt;=</span> toOp
+
+toOp <span class="ch">'+'</span> <span class="fu">=</span> <span class="dt">Add</span>
+toOp <span class="ch">'-'</span> <span class="fu">=</span> <span class="dt">Sub</span>
+toOp <span class="ch">'/'</span> <span class="fu">=</span> <span class="dt">Div</span>
+toOp <span class="ch">'*'</span> <span class="fu">=</span> <span class="dt">Mul</span>
+
+integer <span class="fu">=</span> <span class="dt">Number</span> <span class="fu">.</span> read <span class="fu">&lt;$&gt;</span> many1 digit
+
+expression' <span class="fu">=</span> <span class="dt">Expr</span> <span class="fu">&lt;$&gt;</span> (char <span class="ch">'('</span> <span class="fu">*&gt;</span> op <span class="fu">&lt;*</span> spaces)
+                   <span class="fu">&lt;*&gt;</span> (expression <span class="fu">&lt;*</span> spaces)
+                   <span class="fu">&lt;*&gt;</span> expression</code></pre></div>
+<p>It’s a little different right? It’s as if we’re doing normal composition, but with some extra parsing on the inside. The best explanation I’ve heard of what is equivalent to an applicative functor I found on <a href="http://stackoverflow.com/questions/15726733/simple-examples-to-illustrate-category-monoid-and-monad">stackoverflow</a>. That is, think of an applicative functor as a way to zip values together to be used on a function. In our case, we are zipping our parser bits together to be used to make a data type. The <code>*&gt;</code> and <code>&lt;*</code> functions are used to state what value should be returned when using the operator. In other words, <code>a *&gt; b</code> performs <code>a</code> then <code>b</code>, and returns the value found in <code>b</code>. The computation <code>a &lt;* b</code> performs <code>a</code> then <code>b</code>, and returns the value found in <code>a</code>. Using those we can direct what parts of the parsed value we want to keep, to be used to make our <code>Expression</code> data type. As I said before, it’s not necessary to have this style, but for at least me it reads better. Just like before, you can find the code for these posts <a href="http://github.com/chanko08/hparser">here</a>.</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'chanko08'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</article>
+
+
+<footer>
+    <div>
+        Copyright © 2014 by <a href="./">Epsilon</a>
+    </div>
+
+    <div> 
+        Powered by <a href="http://jaspervdj.be/hakyll">Hakyll</a>.
+    </div>
+
+</footer>
+</div>
+</body>
+</html>

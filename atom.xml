@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>Epsilon: latest blog posts</title>
+    <link href="http://alexbechanko.com//atom.xml" rel="self" />
+    <link href="http://alexbechanko.com/" />
+    <id>http://alexbechanko.com//atom.xml</id>
+    <author>
+        <name>Alex Bechanko</name>
+        <email>chanko08@gmail.com</email>
+    </author>
+    <updated>2014-03-24T00:00:00Z</updated>
+    <entry>
+    <title>One Game a Month - February</title>
+    <link href="http://alexbechanko.com/onegame-febuary-2014.html" />
+    <id>http://alexbechanko.com/onegame-febuary-2014.html</id>
+    <published>2014-03-24T00:00:00Z</published>
+    <updated>2014-03-24T00:00:00Z</updated>
+    <summary type="html"><![CDATA[For Febuary's game I made a silly minesweeper clone]]></summary>
+</entry>
+<entry>
+    <title>One Game a Month - January</title>
+    <link href="http://alexbechanko.com/onegame-january-2014.html" />
+    <id>http://alexbechanko.com/onegame-january-2014.html</id>
+    <published>2014-03-23T00:00:00Z</published>
+    <updated>2014-03-23T00:00:00Z</updated>
+    <summary type="html"><![CDATA[A very delayed post regarding my first month of One Game a Month]]></summary>
+</entry>
+<entry>
+    <title>Handling Multiple Errors in Haskell Part Two</title>
+    <link href="http://alexbechanko.com/error-handling-haskell2.html" />
+    <id>http://alexbechanko.com/error-handling-haskell2.html</id>
+    <published>2014-03-18T00:00:00Z</published>
+    <updated>2014-03-18T00:00:00Z</updated>
+    <summary type="html"><![CDATA[Improving on the previous form validation we had with monad transformers.]]></summary>
+</entry>
+<entry>
+    <title>Handling Multiple Errors in Haskell</title>
+    <link href="http://alexbechanko.com/error-handling-haskell.html" />
+    <id>http://alexbechanko.com/error-handling-haskell.html</id>
+    <published>2014-03-17T00:00:00Z</published>
+    <updated>2014-03-17T00:00:00Z</updated>
+    <summary type="html"><![CDATA[A walkthrough of some form validation for an application]]></summary>
+</entry>
+<entry>
+    <title>Starting One Game a Month This Year</title>
+    <link href="http://alexbechanko.com/starting-onegame-this-year.html" />
+    <id>http://alexbechanko.com/starting-onegame-this-year.html</id>
+    <published>2014-02-10T00:00:00Z</published>
+    <updated>2014-02-10T00:00:00Z</updated>
+    <summary type="html"><![CDATA[For my New Year's resolution I've decided to create one game a month.]]></summary>
+</entry>
+<entry>
+    <title>Updated Look and Structure of Blog</title>
+    <link href="http://alexbechanko.com/updated-look-and-structure.html" />
+    <id>http://alexbechanko.com/updated-look-and-structure.html</id>
+    <published>2014-02-09T00:00:00Z</published>
+    <updated>2014-02-09T00:00:00Z</updated>
+    <summary type="html"><![CDATA[I've updated the blog to with a new look and structure]]></summary>
+</entry>
+<entry>
+    <title>Dynamic Elements With Functional Reactive Programming</title>
+    <link href="http://alexbechanko.com/dynamic-frp-elements.html" />
+    <id>http://alexbechanko.com/dynamic-frp-elements.html</id>
+    <published>2013-11-23T00:00:00Z</published>
+    <updated>2013-11-23T00:00:00Z</updated>
+    <summary type="html"><![CDATA[Handling dynamic collections in functional reactive programming]]></summary>
+</entry>
+<entry>
+    <title>Implementing Tweens With Haskell</title>
+    <link href="http://alexbechanko.com/designing-tween-library-haskell1.html" />
+    <id>http://alexbechanko.com/designing-tween-library-haskell1.html</id>
+    <published>2013-11-09T00:00:00Z</published>
+    <updated>2013-11-09T00:00:00Z</updated>
+    <summary type="html"><![CDATA[Designing a Tween library in Haskell]]></summary>
+</entry>
+<entry>
+    <title>Prototyping a Game - Learning From Failure</title>
+    <link href="http://alexbechanko.com/prototyping-hack-game4.html" />
+    <id>http://alexbechanko.com/prototyping-hack-game4.html</id>
+    <published>2013-10-04T00:00:00Z</published>
+    <updated>2013-10-04T00:00:00Z</updated>
+    <summary type="html"><![CDATA[Sometimes a game mechanic is not as fun as it seemed in your head]]></summary>
+</entry>
+<entry>
+    <title>Prototyping a Game - Adding Opposition</title>
+    <link href="http://alexbechanko.com/prototyping-hack-game3.html" />
+    <id>http://alexbechanko.com/prototyping-hack-game3.html</id>
+    <published>2013-09-25T00:00:00Z</published>
+    <updated>2013-09-25T00:00:00Z</updated>
+    <summary type="html"><![CDATA[Adding some kind of opposition to this territory based game]]></summary>
+</entry>
+<entry>
+    <title>Prototyping a Game - Adding Player Input</title>
+    <link href="http://alexbechanko.com/prototyping-hack-game2.html" />
+    <id>http://alexbechanko.com/prototyping-hack-game2.html</id>
+    <published>2013-09-24T00:00:00Z</published>
+    <updated>2013-09-24T00:00:00Z</updated>
+    <summary type="html"><![CDATA[Adding a way for the player to interact with the game.]]></summary>
+</entry>
+<entry>
+    <title>Prototyping a Game - Starting Out</title>
+    <link href="http://alexbechanko.com/prototyping-hack-game1.html" />
+    <id>http://alexbechanko.com/prototyping-hack-game1.html</id>
+    <published>2013-09-23T00:00:00Z</published>
+    <updated>2013-09-23T00:00:00Z</updated>
+    <summary type="html"><![CDATA[The very beginning stages of fleshing out a game idea]]></summary>
+</entry>
+<entry>
+    <title>Using Alternative in the Parser</title>
+    <link href="http://alexbechanko.com/create-alternative-parser.html" />
+    <id>http://alexbechanko.com/create-alternative-parser.html</id>
+    <published>2013-05-08T00:00:00Z</published>
+    <updated>2013-05-08T00:00:00Z</updated>
+    <summary type="html"><![CDATA[Using monoids to make our parser have choices works well, but using the Alternative type can make things nicer to read as well.]]></summary>
+</entry>
+<entry>
+    <title>Create an Applicative Parser</title>
+    <link href="http://alexbechanko.com/create-applicative-parser.html" />
+    <id>http://alexbechanko.com/create-applicative-parser.html</id>
+    <published>2013-05-07T00:00:00Z</published>
+    <updated>2013-05-07T00:00:00Z</updated>
+    <summary type="html"><![CDATA[Based off our previous monadic parser, we also make the parser an applicative functor.]]></summary>
+</entry>
+<entry>
+    <title>Create a Monadic Parser</title>
+    <link href="http://alexbechanko.com/create-monadic-parser.html" />
+    <id>http://alexbechanko.com/create-monadic-parser.html</id>
+    <published>2013-05-07T00:00:00Z</published>
+    <updated>2013-05-07T00:00:00Z</updated>
+    <summary type="html"><![CDATA[Start building a language interpreter in Haskell by creating a parser.]]></summary>
+</entry>
+
+</feed>
