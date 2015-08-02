@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+
+    <link rel="stylesheet" type="text/css" href="./css/default.css" />
+    <link rel="stylesheet" type="text/css" href="./css/code.css" />
+
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-44373310-1', 'alexbechanko.com');
+        ga('send', 'pageview');
+
+    </script>
+
+    <title>Epsilon - Typed Languages are the Future</title>
+</head>
+<body>
+<header>
+    <h1>Epsilon</h1>
+
+    <nav>
+        <ul>
+            <li><a href="./">Home</a></li>
+            <li><a href="./about.html">About</a></li>
+            <li><a href="./archive.html">Archive</a></li>
+        </ul>
+    </nav>
+</header>
+
+<article>
+<header>
+    <h2>
+      <a href="typed-languages-future.html">Typed Languages are the Future</a>
+    </h2> 
+    Posted on August  1, 2015
+</header>
+
+<p>Going through my past experiences in programming, I think many errors I had was because I was using a dynamically typed language. These are the big problems that a dynamically typed language has for me.</p>
+<h2 id="less-tooling">Less Tooling</h2>
+<p>I consider a compiler as an easy sanity check of my code. If something borks there, I can quickly fix the problem and move on. Whereas with a dynamically typed language, I am mainly left with two choices: use the debugger or go back through the source code. I can do these things with a typed language as well, I just catch the simple errors quicker with a compiler.</p>
+<h2 id="same-work-less-productivity">Same Work, Less Productivity</h2>
+<p>If you build a large application with a dynamically typed language, you are doing the same work as a typed language with less guarantees about the code. Whether it is documenting the types of things passed into a function, or showing an API for how to use something, because you don’t have a computer constantly checking your results you are leaving a lot more room for error later when your program is run (Even if you have tests you run against your code).</p>
+<h2 id="harder-to-encode-correct-state">Harder to Encode Correct State</h2>
+<p>When I write programs nowadays, I try to force myself to write programs that can not possibly produce errors. This usually means writing more types, but doing this allows me to take advantage of the compiler to ensure that the code I write will run, and run correctly. Doing the same thing in a dynamically typed language is wasted effort, as you can only catch errors when running the program. This means having to write more tests for the specifics of your program, which is much more brittle, and less DRY.</p>
+<p>I have to admit, I really like that it seems like web development is going more towards this ideal. To say this was me griping about Javascript wouldn’t be too far from the truth, but I do believe these points hold for any of the other big languages as well like Python, Ruby, etc. I really hope to see languages like Elm take a bigger hold of the mindshare in the future, as they are much easier to produce programs because of the above reasons.</p>
+
+<div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'chanko08'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</article>
+
+
+<footer>
+    <div>
+        Copyright © 2014 by <a href="./">Epsilon</a>
+    </div>
+
+    <div> 
+        Powered by <a href="http://jaspervdj.be/hakyll">Hakyll</a>.
+    </div>
+
+</footer>
+</div>
+</body>
+</html>

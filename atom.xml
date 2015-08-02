@@ -8,8 +8,16 @@
         <name>Alex Bechanko</name>
         <email>chanko08@gmail.com</email>
     </author>
-    <updated>2014-03-24T00:00:00Z</updated>
+    <updated>2015-08-01T00:00:00Z</updated>
     <entry>
+    <title>Typed Languages are the Future</title>
+    <link href="http://alexbechanko.com/typed-languages-future.html" />
+    <id>http://alexbechanko.com/typed-languages-future.html</id>
+    <published>2015-08-01T00:00:00Z</published>
+    <updated>2015-08-01T00:00:00Z</updated>
+    <summary type="html"><![CDATA[Designing the basic structures of snake.]]></summary>
+</entry>
+<entry>
     <title>One Game a Month - February</title>
     <link href="http://alexbechanko.com/onegame-febuary-2014.html" />
     <id>http://alexbechanko.com/onegame-febuary-2014.html</id>
@@ -120,14 +128,6 @@
     <published>2013-05-07T00:00:00Z</published>
     <updated>2013-05-07T00:00:00Z</updated>
     <summary type="html"><![CDATA[Based off our previous monadic parser, we also make the parser an applicative functor.]]></summary>
-</entry>
-<entry>
-    <title>Create a Monadic Parser</title>
-    <link href="http://alexbechanko.com/create-monadic-parser.html" />
-    <id>http://alexbechanko.com/create-monadic-parser.html</id>
-    <published>2013-05-07T00:00:00Z</published>
-    <updated>2013-05-07T00:00:00Z</updated>
-    <summary type="html"><![CDATA[Start building a language interpreter in Haskell by creating a parser.]]></summary>
 </entry>
 
 </feed>
