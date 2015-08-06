@@ -40,14 +40,14 @@
     Posted on August  1, 2015
 </header>
 
-<p>Going through my past experiences in programming, I think many errors I had was because I was using a dynamically typed language. These are the big problems that a dynamically typed language has for me.</p>
+<p>In my past experiences with programming, I think many errors I had were because I used a dynamically typed language. These are the big problems that a dynamically typed language has for me.</p>
 <h2 id="less-tooling">Less Tooling</h2>
 <p>I consider a compiler as an easy sanity check of my code. If something borks there, I can quickly fix the problem and move on. Whereas with a dynamically typed language, I am mainly left with two choices: use the debugger or go back through the source code. I can do these things with a typed language as well, I just catch the simple errors quicker with a compiler.</p>
 <h2 id="same-work-less-productivity">Same Work, Less Productivity</h2>
-<p>If you build a large application with a dynamically typed language, you are doing the same work as a typed language with less guarantees about the code. Whether it is documenting the types of things passed into a function, or showing an API for how to use something, because you don’t have a computer constantly checking your results you are leaving a lot more room for error later when your program is run (Even if you have tests you run against your code).</p>
+<p>If you build a large application with a dynamically typed language, you are doing the same work as a typed language with less guarantees about the code. Whether it is documenting the types of things passed into a function, or showing an API for how to use something. IF you don’t have a computer constantly checking your results, you are leaving a lot more room for error later when your program is run (Even if you have tests you run against your code).</p>
 <h2 id="harder-to-encode-correct-state">Harder to Encode Correct State</h2>
 <p>When I write programs nowadays, I try to force myself to write programs that can not possibly produce errors. This usually means writing more types, but doing this allows me to take advantage of the compiler to ensure that the code I write will run, and run correctly. Doing the same thing in a dynamically typed language is wasted effort, as you can only catch errors when running the program. This means having to write more tests for the specifics of your program, which is much more brittle, and less DRY.</p>
-<p>I have to admit, I really like that it seems like web development is going more towards this ideal. To say this was me griping about Javascript wouldn’t be too far from the truth, but I do believe these points hold for any of the other big languages as well like Python, Ruby, etc. I really hope to see languages like Elm take a bigger hold of the mindshare in the future, as they are much easier to produce programs because of the above reasons.</p>
+<p>I have to admit, I really like that web development is going more towards this ideal. It’s not far from the truth saying that I’m griping about Javascript, but I do believe these points hold for any of the other big languages as well. I really hope to see languages like Elm take a bigger hold of the mindshare in the future, as they can produce correct programs faster because of the above reasons.</p>
 
 <div id="disqus_thread"></div>
 <script type="text/javascript">
